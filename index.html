@@ -1,0 +1,1385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lakshmi Kanth — Walking Career Journey</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: #0a0a1a;
+  color: #e0eaff;
+  overflow-x: hidden;
+}
+
+/* ===== HEADER ===== */
+.page-header {
+  text-align: center;
+  padding: 40px 20px 20px;
+}
+.page-header h1 {
+  font-size: clamp(1.6rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  background: linear-gradient(90deg, #00c6ff, #a855f7);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.page-header p { color: #7a9abf; margin-top: 8px; font-size: 0.95rem; }
+
+/* ===== CONTROLS ===== */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+}
+.btn {
+  padding: 9px 22px;
+  border-radius: 30px;
+  border: 1.5px solid #1a3a5c;
+  background: #0d1b2e;
+  color: #e0eaff;
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+}
+.btn:hover { background: #1a3a5c; border-color: #00c6ff; color: #00c6ff; }
+.btn.active { background: linear-gradient(135deg,#00c6ff,#a855f7); border-color: transparent; color: #fff; }
+
+/* ===== STAGE ===== */
+.stage-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+canvas#stage {
+  display: block;
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  border-radius: 20px;
+  box-shadow: 0 0 60px rgba(0,198,255,0.12);
+}
+
+/* ===== SCENE INFO PANEL ===== */
+.scene-info {
+  max-width: 700px;
+  margin: 18px auto;
+  padding: 0 20px;
+  text-align: center;
+  min-height: 80px;
+}
+.scene-info .si-company {
+  font-size: 1.05rem;
+  font-weight: 800;
+  color: #00c6ff;
+}
+.scene-info .si-client {
+  font-size: 0.85rem;
+  color: #a855f7;
+  margin-top: 2px;
+  font-weight: 600;
+}
+.scene-info .si-role {
+  font-size: 0.78rem;
+  color: #7a9abf;
+  margin-top: 5px;
+}
+.scene-info .si-date {
+  font-size: 0.72rem;
+  color: #f7c948;
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+/* ===== PROGRESS DOTS ===== */
+.dot-track {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 20px 30px;
+  flex-wrap: wrap;
+}
+.dot-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  cursor: pointer;
+}
+.dot-circle {
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: #1a3a5c;
+  border: 2px solid #1e4f7a;
+  transition: all 0.3s;
+}
+.dot-item.active .dot-circle {
+  background: #00c6ff;
+  border-color: #00c6ff;
+  box-shadow: 0 0 8px #00c6ff;
+  transform: scale(1.3);
+}
+.dot-label {
+  font-size: 0.58rem;
+  color: #4a7a9b;
+  font-weight: 600;
+  text-align: center;
+  max-width: 60px;
+}
+.dot-item.active .dot-label { color: #00c6ff; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>Lakshmi Kanth Peddinti</h1>
+  <p>17 Years · Walking Through Every Chapter of an Extraordinary Career</p>
+</div>
+
+<div class="controls">
+  <button class="btn" id="btn-prev">← Prev</button>
+  <button class="btn active" id="btn-play">⏸ Pause</button>
+  <button class="btn" id="btn-next">Next →</button>
+</div>
+
+<div class="stage-wrapper">
+  <canvas id="stage" width="1100" height="480"></canvas>
+</div>
+
+<div class="scene-info">
+  <div class="si-company" id="si-company"></div>
+  <div class="si-client" id="si-client"></div>
+  <div class="si-role" id="si-role"></div>
+  <div class="si-date" id="si-date"></div>
+</div>
+
+<div class="dot-track" id="dot-track"></div>
+
+<script>
+const canvas = document.getElementById('stage');
+const ctx = canvas.getContext('2d');
+const W = canvas.width, H = canvas.height;
+
+// ===================================================
+// SCENES DEFINITION
+// ===================================================
+const scenes = [
+  {
+    id: 'infosys',
+    company: 'Infosys — Pune, India',
+    client: '📞 Client: British Telecommunications Wholesale',
+    role: 'Incident Management Analyst',
+    date: '2008 – 2009',
+    bgColors: ['#0d1a2e','#1a2a4a'],
+    groundColor: '#1e3a5c',
+    skyItems: ['☁','☁','☁'],
+    label: 'Infosys / BT',
+    draw: drawBTScene,
+  },
+  {
+    id: 'techmahindra',
+    company: 'Tech Mahindra — Hyderabad, India',
+    client: '📡 Client: Verizon Communications',
+    role: 'Workforce Management Analyst → Team Lead',
+    date: '2009 – 2013',
+    bgColors: ['#1a0d2e','#2a1a4a'],
+    groundColor: '#3a1a5c',
+    label: 'Tech Mahindra / Verizon',
+    draw: drawVerizonScene,
+  },
+  {
+    id: 'dxc-amp',
+    company: 'DXC Technology — Philadelphia, PA',
+    client: '🌏 Client: AMP Ltd · Dnata Singapore · BHP Iron Ore',
+    role: 'Sr. Associate — Config & Asset Management',
+    date: '2013 – 2019',
+    bgColors: ['#0d2a1a','#1a3a2a'],
+    groundColor: '#1a3a1e',
+    label: 'DXC / Global Accounts',
+    draw: drawGlobalScene,
+  },
+  {
+    id: 'penske',
+    company: 'DXC AI Center of Excellence',
+    client: '🏎 Client: Team Penske — NASCAR & IndyCar',
+    role: 'Data Scientist & Product Owner · Reinforcement Learning',
+    date: '2019 – 2020',
+    bgColors: ['#1a1000','#2a1a00'],
+    groundColor: '#2a1800',
+    label: 'DXC / Team Penske',
+    draw: drawRacingScene,
+  },
+  {
+    id: 'rbs',
+    company: 'DXC AI Center of Excellence',
+    client: '🏦 Client: Royal Bank of Scotland',
+    role: 'Data Scientist · Budget Optimizer · Gradient Descent',
+    date: '2020',
+    bgColors: ['#0d1a0d','#1a2a1a'],
+    groundColor: '#1a3a1a',
+    label: 'DXC / RBS Bank',
+    draw: drawBankScene,
+  },
+  {
+    id: 'fedex',
+    company: 'DXC AI Center of Excellence',
+    client: '📦 Client: FedEx — Virtual API Hackathon',
+    role: 'Team Lead & Architect · 🥉 3rd Place Winner',
+    date: 'Aug 2020',
+    bgColors: ['#1a0d00','#2a1a00'],
+    groundColor: '#2a1500',
+    label: 'DXC / FedEx Hackathon',
+    draw: drawFedExScene,
+  },
+  {
+    id: 'lufthansa',
+    company: 'DXC AI Center of Excellence',
+    client: '✈ Client: Lufthansa Technik — MRO AI',
+    role: 'Data Scientist · Aircraft Defect Prediction',
+    date: '2020 · Hit target in 3 months',
+    bgColors: ['#001a2e','#002a45'],
+    groundColor: '#002040',
+    label: 'DXC / Lufthansa',
+    draw: drawAviationScene,
+  },
+  {
+    id: 'bbc',
+    company: 'DXC AI Center of Excellence',
+    client: '📰 Client: BBC — Robo Journalism',
+    role: 'Data Scientist · Virtual Newsroom · Auto-Generated Articles',
+    date: '2021',
+    bgColors: ['#1a001a','#2a002a'],
+    groundColor: '#2a002a',
+    label: 'DXC / BBC',
+    draw: drawNewsScene,
+  },
+  {
+    id: 'aa',
+    company: 'DXC Technology',
+    client: '🛫 Client: American Airlines',
+    role: 'Data Scientist & Data Engineer · Arrival Time Prediction',
+    date: '2021 – 2022 · World\'s Largest Airline',
+    bgColors: ['#001428','#00203d'],
+    groundColor: '#001830',
+    label: 'DXC / American Airlines',
+    draw: drawAirlinesScene,
+  },
+  {
+    id: 'pepsico',
+    company: 'PepsiCo — McKinney, Texas',
+    client: '🤖 GenAI · LLMs · LangChain · CrewAI · RAG Pipelines',
+    role: 'Data Scientist · Data Engineer · GenAI Application Developer',
+    date: '2022 – Present · Fortune 50',
+    bgColors: ['#0a001a','#15002e'],
+    groundColor: '#1a0030',
+    label: 'PepsiCo GenAI',
+    draw: drawGenAIScene,
+  },
+];
+
+// ===================================================
+// STATE
+// ===================================================
+let currentScene = 0;
+let t = 0;           // animation time (increments each frame)
+let manX = 120;      // man's X position
+let manWalking = true;
+let transitioning = false;
+let transitionAlpha = 0;
+let autoPlay = true;
+let sceneTimer = 0;
+const SCENE_DURATION = 420; // frames before auto-advance
+
+// ===================================================
+// MAN DRAWING
+// ===================================================
+function drawMan(x, y, t, color='#00e5ff', scale=1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  const walk = Math.sin(t * 0.18) * 12;
+  const walk2 = -walk;
+  const bob = Math.abs(Math.sin(t * 0.18)) * 4;
+
+  // shadow
+  ctx.save();
+  ctx.translate(0, 2);
+  ctx.scale(1, 0.3);
+  ctx.beginPath();
+  ctx.ellipse(0, 0, 18, 8, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.4)';
+  ctx.fill();
+  ctx.restore();
+
+  // legs
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+
+  // leg 1
+  ctx.beginPath();
+  ctx.moveTo(0, -20);
+  ctx.lineTo(-8 + walk*0.6, 0);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  // leg 2
+  ctx.beginPath();
+  ctx.moveTo(0, -20);
+  ctx.lineTo(8 + walk2*0.6, 0);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  // feet
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.moveTo(-8 + walk*0.6, 0);
+  ctx.lineTo(-8 + walk*0.6 + 10, 0);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(8 + walk2*0.6, 0);
+  ctx.lineTo(8 + walk2*0.6 + 10, 0);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  // body
+  ctx.beginPath();
+  ctx.moveTo(0, -20 - bob);
+  ctx.lineTo(0, -52 - bob);
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  // arms
+  ctx.lineWidth = 3.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -45 - bob);
+  ctx.lineTo(-16 + walk2*0.4, -32 - bob);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.moveTo(0, -45 - bob);
+  ctx.lineTo(16 + walk*0.4, -32 - bob);
+  ctx.strokeStyle = color;
+  ctx.stroke();
+
+  // head
+  ctx.beginPath();
+  ctx.arc(0, -60 - bob, 10, 0, Math.PI * 2);
+  ctx.fillStyle = color;
+  ctx.fill();
+
+  // face
+  ctx.fillStyle = '#0a0a1a';
+  ctx.beginPath(); ctx.arc(-3, -61 - bob, 1.8, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3, -61 - bob, 1.8, 0, Math.PI*2); ctx.fill();
+  ctx.beginPath();
+  ctx.arc(0, -58 - bob, 4, 0.2, Math.PI - 0.2);
+  ctx.lineWidth = 1.5;
+  ctx.strokeStyle = '#0a0a1a';
+  ctx.stroke();
+
+  ctx.restore();
+}
+
+function drawManIdle(x, y, t, color='#00e5ff', scale=1) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.scale(scale, scale);
+
+  const bob = Math.sin(t * 0.06) * 2;
+
+  // shadow
+  ctx.save(); ctx.translate(0, 2); ctx.scale(1, 0.3);
+  ctx.beginPath(); ctx.ellipse(0, 0, 14, 6, 0, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.35)'; ctx.fill();
+  ctx.restore();
+
+  ctx.lineWidth = 4; ctx.lineCap = 'round';
+
+  // legs straight
+  ctx.beginPath(); ctx.moveTo(-5, -20); ctx.lineTo(-8, 0); ctx.strokeStyle = color; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(5, -20);  ctx.lineTo(8, 0);  ctx.strokeStyle = color; ctx.stroke();
+  // feet
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(-8,0); ctx.lineTo(2,0); ctx.strokeStyle=color; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(8,0);  ctx.lineTo(18,0); ctx.strokeStyle=color; ctx.stroke();
+
+  // body
+  ctx.lineWidth = 5;
+  ctx.beginPath(); ctx.moveTo(0,-20-bob); ctx.lineTo(0,-52-bob); ctx.strokeStyle=color; ctx.stroke();
+
+  // arms (doing activity - passed in via caller)
+  ctx.lineWidth = 3.5;
+  // default arms up slightly
+  ctx.beginPath(); ctx.moveTo(0,-45-bob); ctx.lineTo(-18,-38-bob); ctx.strokeStyle=color; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(0,-45-bob); ctx.lineTo(18,-38-bob); ctx.strokeStyle=color; ctx.stroke();
+
+  // head
+  ctx.beginPath(); ctx.arc(0,-60-bob,10,0,Math.PI*2); ctx.fillStyle=color; ctx.fill();
+  ctx.fillStyle='#0a0a1a';
+  ctx.beginPath(); ctx.arc(-3,-61-bob,1.8,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(3,-61-bob,1.8,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0,-58-bob,4,0.2,Math.PI-0.2); ctx.lineWidth=1.5; ctx.strokeStyle='#0a0a1a'; ctx.stroke();
+
+  ctx.restore();
+}
+
+// ===================================================
+// HELPERS
+// ===================================================
+function drawGround(color, y=H-80) {
+  ctx.fillStyle = color;
+  ctx.fillRect(0, y, W, H - y);
+
+  // ground line glow
+  ctx.shadowColor = '#00c6ff';
+  ctx.shadowBlur = 8;
+  ctx.fillStyle = 'rgba(0,198,255,0.3)';
+  ctx.fillRect(0, y, W, 2);
+  ctx.shadowBlur = 0;
+}
+
+function drawSky(c1, c2) {
+  const g = ctx.createLinearGradient(0,0,0,H-80);
+  g.addColorStop(0, c1);
+  g.addColorStop(1, c2);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, H-80);
+}
+
+function label(text, x, y, size=13, color='#fff', alpha=1) {
+  ctx.save();
+  ctx.globalAlpha = alpha;
+  ctx.font = `700 ${size}px Inter, sans-serif`;
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y);
+  ctx.restore();
+}
+
+function bubble(text, x, y, color='#00c6ff') {
+  ctx.save();
+  const pad = 10;
+  ctx.font = '600 12px Inter, sans-serif';
+  const tw = ctx.measureText(text).width;
+  const bw = tw + pad*2, bh = 26;
+  // bg
+  ctx.fillStyle = 'rgba(0,0,0,0.7)';
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 1.5;
+  roundRect(x - bw/2, y - bh, bw, bh, 8);
+  ctx.fill(); ctx.stroke();
+  // tail
+  ctx.beginPath();
+  ctx.moveTo(x-5, y); ctx.lineTo(x, y+8); ctx.lineTo(x+5, y);
+  ctx.fillStyle='rgba(0,0,0,0.7)'; ctx.fill();
+  ctx.strokeStyle=color; ctx.stroke();
+  // text
+  ctx.fillStyle = color;
+  ctx.textAlign = 'center';
+  ctx.fillText(text, x, y - 8);
+  ctx.restore();
+}
+
+function roundRect(x,y,w,h,r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r, y);
+  ctx.lineTo(x+w-r, y);
+  ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+  ctx.lineTo(x+w, y+h-r);
+  ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+  ctx.lineTo(x+r, y+h);
+  ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+  ctx.lineTo(x, y+r);
+  ctx.quadraticCurveTo(x, y, x+r, y);
+  ctx.closePath();
+}
+
+function star(cx, cy, r, color, t, speed=0.02) {
+  const twinkle = 0.5 + 0.5*Math.sin(t*speed + cx);
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * twinkle, 0, Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+// ===================================================
+// SCENE DRAWS
+// ===================================================
+
+// 1. BT Telecom — office, phone call
+function drawBTScene(mx, t) {
+  drawSky('#0d1a2e','#1a2a4a');
+  // stars
+  for(let i=0;i<30;i++) star(50+i*35, 20+Math.sin(i*73.1)*40, 1.5, '#a0d0ff', t, 0.03+i*0.001);
+
+  drawGround('#1e3a5c');
+
+  // building
+  ctx.fillStyle = '#1a2a45';
+  ctx.strokeStyle = '#2a5a8a';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); roundRect(700, H-280, 180, 200, 6); ctx.fill(); ctx.stroke();
+
+  // windows
+  for(let row=0;row<4;row++) for(let col=0;col<3;col++) {
+    const wx = 720+col*52, wy = H-260+row*48;
+    const lit = (row+col)%3!==0;
+    ctx.fillStyle = lit ? `rgba(255,220,100,${0.6+0.3*Math.sin(t*0.05+row*col)})` : '#1a2a3a';
+    ctx.strokeStyle = '#2a4a6a';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); roundRect(wx, wy, 32, 30, 3); ctx.fill(); ctx.stroke();
+  }
+
+  // sign
+  ctx.fillStyle = '#e40e20';
+  ctx.beginPath(); roundRect(710, H-290, 160, 24, 5); ctx.fill();
+  label('British Telecom', 790, H-273, 11, '#fff');
+
+  // desk
+  ctx.fillStyle = '#2a4060';
+  ctx.beginPath(); ctx.rect(mx-30, H-115, 80, 12); ctx.fill();
+  ctx.fillStyle = '#1e3050';
+  ctx.beginPath(); ctx.rect(mx-28, H-103, 76, 40); ctx.fill();
+
+  // monitor
+  ctx.fillStyle = '#1a2a3a';
+  ctx.strokeStyle = '#00c6ff';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); roundRect(mx-10, H-155, 50, 36, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#003a5c';
+  ctx.beginPath(); roundRect(mx-6, H-151, 42, 28, 2); ctx.fill();
+  // screen content
+  ctx.fillStyle = '#00c6ff';
+  ctx.fillRect(mx-2, H-148, 34, 2);
+  ctx.fillRect(mx-2, H-143, 22, 2);
+  ctx.fillRect(mx-2, H-138, 28, 2);
+
+  // phone in hand (man holding phone to ear)
+  const bob = Math.sin(t*0.06)*2;
+  const py = H - 155 - bob;
+  ctx.fillStyle = '#222';
+  ctx.strokeStyle = '#555';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); roundRect(mx + 18, py - 10, 12, 20, 4); ctx.fill(); ctx.stroke();
+  // sound waves
+  for(let i=1;i<=3;i++) {
+    ctx.beginPath();
+    ctx.arc(mx+35, py-2, i*7, -0.8, 0.8);
+    ctx.strokeStyle = `rgba(0,198,255,${0.6-i*0.15})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
+
+  drawManIdle(mx, H-80, t, '#00e5ff');
+  bubble('🗣️ Incident call with UK customer!', mx, H-165, '#00c6ff');
+
+  label('🏢 INFOSYS · BT Wholesale · Pune, India', W/2, 50, 15, '#6ec6ff');
+  label('2008 – 2009', W/2, 72, 11, '#f7c948');
+}
+
+// 2. Verizon — data dashboards, forecasting
+function drawVerizonScene(mx, t) {
+  drawSky('#1a0d2e','#2a1a4a');
+  for(let i=0;i<25;i++) star(80+i*42, 15+Math.sin(i*53.7)*50, 1.8, '#d0b0ff', t, 0.025+i*0.001);
+
+  drawGround('#2a1a5c');
+
+  // office interior
+  ctx.fillStyle = '#1e1535';
+  ctx.beginPath(); ctx.rect(500, H-320, 380, 240); ctx.fill();
+  ctx.strokeStyle = '#5a3a8a'; ctx.lineWidth = 2;
+  ctx.strokeRect(500, H-320, 380, 240);
+
+  // big dashboard screen
+  ctx.fillStyle = '#0d0822';
+  ctx.strokeStyle = '#e4002b';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); roundRect(520, H-305, 340, 160, 6); ctx.fill(); ctx.stroke();
+
+  // Verizon label
+  ctx.fillStyle = '#e4002b';
+  ctx.beginPath(); roundRect(520, H-315, 160, 18, 4); ctx.fill();
+  label('Verizon', 600, H-302, 11, '#fff');
+
+  // chart bars
+  const bars = [60,85,45,90,70,80,55];
+  bars.forEach((h,i) => {
+    const bx = 535 + i*46;
+    const anim_h = h * (0.5+0.5*Math.sin(t*0.04+i*0.5)) * 0.9;
+    const g = ctx.createLinearGradient(0, H-230, 0, H-230-anim_h);
+    g.addColorStop(0,'#e4002b'); g.addColorStop(1,'#ff6b6b');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.rect(bx, H-230-anim_h, 30, anim_h); ctx.fill();
+    label(h+'%', bx+15, H-235, 9, '#ff8a80');
+  });
+
+  // forecast line
+  ctx.beginPath();
+  ctx.moveTo(535, H-200);
+  bars.forEach((h,i) => {
+    ctx.lineTo(535+i*46+15, H-230-h*0.7);
+  });
+  ctx.strokeStyle = '#f7c948'; ctx.lineWidth = 2.5;
+  ctx.setLineDash([6,3]); ctx.stroke(); ctx.setLineDash([]);
+
+  // headcount counter
+  ctx.fillStyle = 'rgba(100,50,150,0.4)';
+  ctx.beginPath(); roundRect(580, H-135, 110, 36, 6); ctx.fill();
+  label('👥 400+ Agents', 635, H-112, 10, '#d0b0ff');
+
+  drawManIdle(mx, H-80, t, '#d0b0ff');
+  bubble('📊 Forecasting call volumes!', mx, H-160, '#d0b0ff');
+
+  // floating numbers
+  for(let i=0; i<5; i++) {
+    const fx = mx + 40 + (i*60 % 300);
+    const fy = H-200 + Math.sin(t*0.04+i)*30;
+    const alpha = 0.3 + 0.5*Math.abs(Math.sin(t*0.03+i));
+    ctx.save(); ctx.globalAlpha = alpha;
+    label(['95%','SLA','400','Teams','KPI'][i], fx, fy, 10, '#d0b0ff');
+    ctx.restore();
+  }
+
+  label('📡 TECH MAHINDRA · Verizon · Hyderabad', W/2, 50, 15, '#d0b0ff');
+  label('2009 – 2013 · Team Lead RPM', W/2, 72, 11, '#f7c948');
+}
+
+// 3. Global Accounts — world map, CMDB
+function drawGlobalScene(mx, t) {
+  drawSky('#0d2a1a','#1a3a2a');
+  drawGround('#1a3a1e');
+
+  // world map (simple outline)
+  ctx.save();
+  ctx.translate(600, H/2 - 60);
+  ctx.strokeStyle = '#2adf8a';
+  ctx.lineWidth = 1;
+  ctx.globalAlpha = 0.25;
+  // simplified continents as arcs
+  const conts = [
+    {x:-120,y:-60,rx:80,ry:50},
+    {x:10,y:-50,rx:60,ry:55},
+    {x:80,y:-20,rx:40,ry:60},
+    {x:160,y:-10,rx:50,ry:40},
+    {x:20,y:50,rx:35,ry:30},
+    {x:-60,y:40,rx:25,ry:20},
+  ];
+  conts.forEach(c => {
+    ctx.beginPath();
+    ctx.ellipse(c.x,c.y,c.rx,c.ry,0,0,Math.PI*2);
+    ctx.stroke();
+    ctx.fillStyle='rgba(42,223,138,0.1)';
+    ctx.fill();
+  });
+  ctx.restore();
+
+  // connection dots for 3 clients
+  const clients = [
+    { label:'AMP\nAustralia', x:820, y:H-200, color:'#1a73e8' },
+    { label:'Dnata\nSingapore', x:750, y:H-280, color:'#2e7d32' },
+    { label:'BHP\nIron Ore', x:870, y:H-150, color:'#e65100' },
+  ];
+  clients.forEach(c => {
+    // pulsing circle
+    const r = 8 + 4*Math.sin(t*0.08);
+    ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, Math.PI*2);
+    ctx.fillStyle = c.color+'44'; ctx.fill();
+    ctx.beginPath(); ctx.arc(c.x, c.y, 6, 0, Math.PI*2);
+    ctx.fillStyle = c.color; ctx.fill();
+    // line to man
+    ctx.beginPath(); ctx.moveTo(mx, H-110); ctx.lineTo(c.x, c.y);
+    ctx.strokeStyle = c.color+'66'; ctx.lineWidth = 1.5;
+    ctx.setLineDash([6,4]); ctx.stroke(); ctx.setLineDash([]);
+    // label
+    label(c.label.replace('\n',' '), c.x, c.y-16, 10, c.color);
+  });
+
+  // laptop in front of man
+  ctx.fillStyle = '#1a3a2a';
+  ctx.strokeStyle = '#2adf8a';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); roundRect(mx-5, H-155, 60, 40, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = '#003a20';
+  ctx.beginPath(); roundRect(mx-1, H-151, 52, 32, 2); ctx.fill();
+  // ServiceNow text
+  ctx.fillStyle = '#2adf8a';
+  ctx.font = '600 8px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('ServiceNow', mx+29, H-135);
+  ctx.fillText('CMDB ✓', mx+29, H-124);
+
+  drawManIdle(mx, H-80, t, '#2adf8a');
+  bubble('🌐 Managing CMDB across 3 continents!', mx, H-165, '#2adf8a');
+
+  label('🌐 DXC TECHNOLOGY · AMP · Dnata · BHP', W/2, 50, 15, '#2adf8a');
+  label('2013 – 2019 · Global Asset Management', W/2, 72, 11, '#f7c948');
+}
+
+// 4. Racing — Team Penske, race car
+function drawRacingScene(mx, t) {
+  // racetrack background
+  const g = ctx.createLinearGradient(0,0,0,H-80);
+  g.addColorStop(0,'#1a0a00'); g.addColorStop(1,'#2a1500');
+  ctx.fillStyle = g; ctx.fillRect(0,0,W,H-80);
+
+  // track
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.rect(0, H-130, W, 60); ctx.fill();
+  // track lines
+  ctx.setLineDash([40,20]);
+  ctx.strokeStyle = '#f7c948'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0,H-100); ctx.lineTo(W,H-100); ctx.stroke();
+  ctx.setLineDash([]);
+
+  drawGround('#1a0d00');
+
+  // stands (background)
+  for(let i=0;i<12;i++) {
+    ctx.fillStyle = `hsl(${20+i*15},40%,${15+i%3*5}%)`;
+    ctx.beginPath(); ctx.rect(i*95, H-350, 90, 230); ctx.fill();
+  }
+  // crowd dots
+  for(let row=0;row<4;row++) for(let col=0;col<60;col++) {
+    ctx.beginPath();
+    ctx.arc(col*18+5, H-340+row*22, 3, 0, Math.PI*2);
+    ctx.fillStyle = `hsl(${Math.random()*360},60%,60%)`;
+    ctx.fill();
+  }
+
+  // race car driving
+  const carX = (t * 3) % (W + 200) - 100;
+  drawRaceCar(carX, H-115, t);
+
+  // speed lines
+  for(let i=0;i<6;i++) {
+    const lx = (carX - 30 - i*25 + W) % W;
+    ctx.beginPath();
+    ctx.moveTo(lx, H-120+i*4);
+    ctx.lineTo(lx - 40, H-120+i*4);
+    ctx.strokeStyle = `rgba(247,201,72,${0.5-i*0.07})`;
+    ctx.lineWidth = 2; ctx.stroke();
+  }
+
+  // Penske logo area
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  ctx.beginPath(); roundRect(W-250, 30, 220, 60, 8); ctx.fill();
+  label('🏎 TEAM PENSKE', W-140, 55, 13, '#f7c948');
+  label('NASCAR · IndyCar · RL Simulator', W-140, 75, 10, '#ffa726');
+
+  drawManIdle(mx, H-80, t, '#f7c948');
+  bubble('🤖 Building AI race simulator!', mx, H-160, '#f7c948');
+
+  label('🏎 DXC AI CoE · TEAM PENSKE', W/2, 50, 15, '#f7c948');
+  label('2019 – 2020 · Reinforcement Learning', W/2, 72, 11, '#ffa726');
+}
+
+function drawRaceCar(x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  // body
+  ctx.fillStyle = '#cc0000';
+  ctx.beginPath();
+  ctx.moveTo(-60, 0); ctx.lineTo(-40,-20); ctx.lineTo(30,-25);
+  ctx.lineTo(55,-15); ctx.lineTo(60,0); ctx.closePath();
+  ctx.fill();
+  // cockpit
+  ctx.fillStyle = '#1a1a1a';
+  ctx.beginPath();
+  ctx.moveTo(-15,-20); ctx.lineTo(-5,-35); ctx.lineTo(20,-35);
+  ctx.lineTo(30,-20); ctx.closePath(); ctx.fill();
+  // wheels
+  [-40,35].forEach(wx => {
+    ctx.beginPath(); ctx.arc(wx,5,12,0,Math.PI*2);
+    ctx.fillStyle='#222'; ctx.fill();
+    ctx.beginPath(); ctx.arc(wx,5,6,0,Math.PI*2);
+    ctx.fillStyle='#888'; ctx.fill();
+    // spin
+    ctx.save(); ctx.translate(wx,5); ctx.rotate(t*0.25);
+    ctx.strokeStyle='#aaa'; ctx.lineWidth=1.5;
+    ctx.beginPath(); ctx.moveTo(-5,0); ctx.lineTo(5,0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-5); ctx.lineTo(0,5); ctx.stroke();
+    ctx.restore();
+  });
+  // number
+  ctx.fillStyle='#fff'; ctx.font='bold 10px Inter'; ctx.textAlign='center';
+  ctx.fillText('12', 0, -5);
+  // exhaust
+  for(let i=0;i<3;i++) {
+    ctx.beginPath(); ctx.arc(-65-i*10, 0, 4-i, 0, Math.PI*2);
+    ctx.fillStyle=`rgba(200,100,0,${0.5-i*0.15})`; ctx.fill();
+  }
+  ctx.restore();
+}
+
+// 5. RBS Bank — money, coins
+function drawBankScene(mx, t) {
+  drawSky('#0d1a0d','#1a2a1a');
+  drawGround('#1a3a1a');
+
+  // bank building
+  ctx.fillStyle = '#1a2820';
+  ctx.strokeStyle = '#2a5a3a'; ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.rect(600, H-310, 260, 230); ctx.fill(); ctx.stroke();
+  // pillars
+  [630,680,730,780,810].forEach(px => {
+    ctx.fillStyle='#243a28';
+    ctx.beginPath(); ctx.rect(px, H-300, 16, 210); ctx.fill();
+  });
+  // pediment
+  ctx.fillStyle = '#1e3028';
+  ctx.beginPath(); ctx.moveTo(590,H-310); ctx.lineTo(870,H-310); ctx.lineTo(730,H-380); ctx.closePath(); ctx.fill();
+  label('RBS BANK', 730, H-330, 12, '#2adf8a');
+
+  // floating coins
+  for(let i=0;i<8;i++) {
+    const cx = mx + 60 + Math.sin(t*0.05+i)*80;
+    const cy = H - 200 + Math.sin(t*0.07+i*1.3)*40;
+    const r = 12 + i%3*4;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, Math.PI*2);
+    ctx.fillStyle = `rgba(247,201,72,${0.4+0.4*Math.sin(t*0.08+i)})`;
+    ctx.fill();
+    ctx.strokeStyle='#c79200'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.fillStyle='#c79200'; ctx.font=`bold ${r-2}px Inter`; ctx.textAlign='center';
+    ctx.fillText('$', cx, cy+4);
+  }
+
+  // chart (gradient descent)
+  ctx.beginPath();
+  for(let i=0;i<80;i++) {
+    const gx = mx+80+i*3;
+    const gy = H-220 + (i/80)*80 + Math.sin(i*0.3)*5 - Math.sin(t*0.04)*3;
+    i===0 ? ctx.moveTo(gx,gy) : ctx.lineTo(gx,gy);
+  }
+  ctx.strokeStyle='#2adf8a'; ctx.lineWidth=2.5; ctx.stroke();
+  label('Gradient Descent Optimizer', mx+200, H-240, 10, '#2adf8a');
+
+  // budget display
+  ctx.fillStyle='rgba(0,0,0,0.5)';
+  ctx.beginPath(); roundRect(mx+90, H-190, 130, 60, 8); ctx.fill();
+  ctx.strokeStyle='#2adf8a'; ctx.lineWidth=1; ctx.stroke();
+  label('💰 Budget Plan', mx+155, H-170, 10, '#f7c948');
+  label(`Savings: $${(1000+Math.sin(t*0.05)*200).toFixed(0)}/mo`, mx+155, H-150, 9, '#2adf8a');
+
+  drawManIdle(mx, H-80, t, '#2adf8a');
+  bubble('💰 Optimizing budgets with AI!', mx, H-160, '#2adf8a');
+
+  label('🏦 DXC AI CoE · RBS BANK', W/2, 50, 15, '#2adf8a');
+  label('2020 · Budget Optimizer · Gradient Descent', W/2, 72, 11, '#f7c948');
+}
+
+// 6. FedEx Hackathon
+function drawFedExScene(mx, t) {
+  drawSky('#1a0d00','#2a1500');
+  drawGround('#2a1500');
+
+  // warehouse
+  ctx.fillStyle = '#1a1000';
+  ctx.strokeStyle = '#4a2a00'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.rect(550, H-280, 320, 200); ctx.fill(); ctx.stroke();
+  ctx.fillStyle='#4a3000';
+  ctx.beginPath(); ctx.rect(550,H-280,320,16); ctx.fill();
+  label('FedEx Distribution Center', 710, H-268, 10, '#f96301');
+
+  // packages moving on conveyor
+  const convY = H-130;
+  ctx.fillStyle='#3a2000'; ctx.beginPath(); ctx.rect(400,convY,400,12); ctx.fill();
+
+  for(let i=0;i<5;i++) {
+    const bx = ((t*2 + i*80) % 500) + 350;
+    ctx.fillStyle='#c97a00';
+    ctx.strokeStyle='#f96301'; ctx.lineWidth=1.5;
+    ctx.beginPath(); roundRect(bx, convY-20, 35, 20, 3); ctx.fill(); ctx.stroke();
+    // FedEx logo strip
+    ctx.fillStyle='#f96301';
+    ctx.beginPath(); ctx.rect(bx+2, convY-8, 31, 6); ctx.fill();
+    ctx.fillStyle='#fff'; ctx.font='bold 5px Inter'; ctx.textAlign='center';
+    ctx.fillText('FedEx', bx+17, convY-3);
+  }
+
+  // voice wave for voice app
+  ctx.save();
+  ctx.translate(mx+60, H-200);
+  for(let i=0;i<20;i++) {
+    const h = 10 + 20*Math.abs(Math.sin(t*0.1+i*0.4));
+    ctx.fillStyle=`rgba(249,99,1,${0.4+0.4*Math.sin(t*0.1+i)})`;
+    ctx.beginPath(); ctx.rect(i*12-120, -h/2, 8, h); ctx.fill();
+  }
+  ctx.restore();
+
+  // trophy
+  ctx.save();
+  ctx.translate(W-100, H-180);
+  ctx.fillStyle='#c79200';
+  ctx.beginPath(); ctx.arc(0,-20,25,0,Math.PI*2); ctx.fill();
+  ctx.fillStyle='#f7c948';
+  ctx.font='bold 18px Inter'; ctx.textAlign='center'; ctx.fillText('🥉',0,-14);
+  label('3rd Place!', 0, 15, 10, '#f7c948');
+  ctx.restore();
+
+  drawManIdle(mx, H-80, t, '#f96301');
+  bubble('🎤 Voice + FedEx APIs = Winner!', mx, H-165, '#f96301');
+
+  label('📦 DXC AI CoE · FedEx Hackathon', W/2, 50, 15, '#f96301');
+  label('Aug 2020 · 🥉 3rd Place Winner', W/2, 72, 11, '#f7c948');
+}
+
+// 7. Lufthansa — aviation, aircraft
+function drawAviationScene(mx, t) {
+  // sky gradient
+  const g = ctx.createLinearGradient(0,0,0,H-80);
+  g.addColorStop(0,'#001428'); g.addColorStop(0.6,'#002040'); g.addColorStop(1,'#001830');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H-80);
+
+  drawGround('#001830');
+
+  // stars
+  for(let i=0;i<40;i++) star(i*28+10, 10+Math.sin(i*43.1)*60, 1.2, '#a0c0ff', t, 0.02);
+
+  // flying plane
+  const planeX = 150 + (t*1.5)%(W+200);
+  const planeY = H/2 - 60 + Math.sin(t*0.03)*20;
+  drawPlane(planeX, planeY, t);
+
+  // hangar
+  ctx.fillStyle='#001525';
+  ctx.strokeStyle='#0050a0'; ctx.lineWidth=2;
+  ctx.beginPath();
+  ctx.moveTo(600,H-80);
+  ctx.lineTo(600,H-220);
+  ctx.quadraticCurveTo(750,H-280,900,H-220);
+  ctx.lineTo(900,H-80);
+  ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  label('Lufthansa Technik MRO', 750, H-240, 11, '#0050a0');
+
+  // AI prediction readout
+  ctx.fillStyle='rgba(0,0,0,0.7)';
+  ctx.beginPath(); roundRect(mx+60, H-230, 200, 80, 8); ctx.fill();
+  ctx.strokeStyle='#1a73e8'; ctx.lineWidth=1.5; ctx.stroke();
+  label('✈ Defect Prediction Model', mx+160, H-210, 10, '#6ec6ff');
+  label(`Engine Wear: ${(70+10*Math.sin(t*0.07)).toFixed(1)}%`, mx+160, H-190, 9, '#ff8a80');
+  label(`Service Hours: ${(120+20*Math.sin(t*0.05)).toFixed(0)}h`, mx+160, H-173, 9, '#2adf8a');
+  label('Accuracy: 87.3% ✓', mx+160, H-156, 9, '#f7c948');
+
+  drawManIdle(mx, H-80, t, '#6ec6ff');
+  bubble('✈ Predicting aircraft defects!', mx, H-165, '#6ec6ff');
+
+  label('✈ DXC AI CoE · LUFTHANSA TECHNIK', W/2, 50, 15, '#6ec6ff');
+  label('2020 · Hit target in 3 months · MRO AI', W/2, 72, 11, '#f7c948');
+}
+
+function drawPlane(x, y, t) {
+  ctx.save();
+  ctx.translate(x, y);
+  const tilt = Math.sin(t*0.03)*5;
+  ctx.rotate(tilt * Math.PI/180);
+
+  // body
+  ctx.fillStyle='#dde8f7';
+  ctx.beginPath();
+  ctx.moveTo(-80,0); ctx.lineTo(60,-12); ctx.lineTo(80,0); ctx.lineTo(60,12); ctx.lineTo(-80,0);
+  ctx.fill();
+  ctx.strokeStyle='#0050a0'; ctx.lineWidth=1; ctx.stroke();
+
+  // wings
+  ctx.fillStyle='#c8d8ed';
+  ctx.beginPath();
+  ctx.moveTo(-10,-12); ctx.lineTo(20,-12); ctx.lineTo(10,-55); ctx.lineTo(-20,-50); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(-10,12); ctx.lineTo(20,12); ctx.lineTo(10,55); ctx.lineTo(-20,50); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+
+  // tail
+  ctx.fillStyle='#b0c8e0';
+  ctx.beginPath();
+  ctx.moveTo(-70,-2); ctx.lineTo(-60,-2); ctx.lineTo(-50,-25); ctx.lineTo(-75,-25); ctx.closePath();
+  ctx.fill(); ctx.stroke();
+
+  // Lufthansa circle
+  ctx.beginPath(); ctx.arc(-10,0,10,0,Math.PI*2);
+  ctx.fillStyle='#0050a0'; ctx.fill();
+  ctx.fillStyle='#ffc61e'; ctx.font='bold 9px Inter'; ctx.textAlign='center'; ctx.fillText('LH',-10,4);
+
+  // windows
+  for(let i=0;i<5;i++) {
+    ctx.beginPath(); ctx.arc(-30+i*14, -4, 3.5, 0, Math.PI*2);
+    ctx.fillStyle='#a0d0f0'; ctx.fill();
+  }
+
+  // engine exhaust
+  for(let i=0;i<4;i++) {
+    ctx.beginPath(); ctx.arc(-85-i*8, 0, 3-i*0.5, 0, Math.PI*2);
+    ctx.fillStyle=`rgba(200,200,220,${0.4-i*0.1})`; ctx.fill();
+  }
+  ctx.restore();
+}
+
+// 8. BBC Newsroom
+function drawNewsScene(mx, t) {
+  drawSky('#1a001a','#2a002a');
+  for(let i=0;i<20;i++) star(i*55, 20+Math.sin(i*61)*40, 1.5, '#e0b0ff', t);
+  drawGround('#1a001a');
+
+  // TV studio background
+  ctx.fillStyle='#0d0015';
+  ctx.beginPath(); ctx.rect(450,H-310,430,230); ctx.fill();
+  ctx.strokeStyle='#6600aa'; ctx.lineWidth=2; ctx.stroke();
+
+  // BBC logo
+  ctx.fillStyle='#bb1919';
+  ctx.beginPath(); roundRect(460,H-305,90,40,4); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='bold 18px Inter'; ctx.textAlign='center';
+  ctx.fillText('BBC', 505, H-279);
+
+  // news ticker
+  const tickerX = (W - (t*2)%W + W) % W - 400;
+  ctx.fillStyle='rgba(187,25,25,0.9)';
+  ctx.beginPath(); ctx.rect(0,H-100,W,22); ctx.fill();
+  ctx.fillStyle='#fff'; ctx.font='600 11px Inter'; ctx.textAlign='left';
+  ctx.save(); ctx.rect(0,H-100,W,22); ctx.clip();
+  ctx.fillText('🤖 AI ROBO JOURNALISM: Automated news articles from trend data · VIRTUAL NEWSROOM LIVE · Story detection running ···', tickerX, H-84);
+  ctx.restore();
+
+  // news headlines floating
+  const headlines = ['Breaking: GDP Falls 2%','Tech Market Surge','Weather: Storm Incoming','AI Writes the News!'];
+  headlines.forEach((h,i) => {
+    const hx = 480 + (i%2)*180;
+    const hy = H-280 + Math.floor(i/2)*55;
+    ctx.fillStyle='rgba(40,0,60,0.8)';
+    ctx.beginPath(); roundRect(hx, hy, 170, 40, 4); ctx.fill();
+    ctx.strokeStyle='#aa00ff'; ctx.lineWidth=1; ctx.stroke();
+    label(h, hx+85, hy+25, 9, '#e0b0ff');
+    // auto-typing cursor
+    if(i===Math.floor(t/80)%4) {
+      ctx.fillStyle='#aa00ff';
+      ctx.fillRect(hx+85+(t%20)-10, hy+15, 2, 12);
+    }
+  });
+
+  // trend graph
+  ctx.beginPath();
+  for(let i=0;i<60;i++) {
+    const tx2 = mx+80+i*4;
+    const ty = H-200 + Math.sin(i*0.2+t*0.06)*30;
+    i===0 ? ctx.moveTo(tx2,ty) : ctx.lineTo(tx2,ty);
+  }
+  ctx.strokeStyle='#aa00ff'; ctx.lineWidth=2; ctx.stroke();
+  label('📈 Trend Detection', mx+200, H-235, 9, '#aa00ff');
+
+  drawManIdle(mx, H-80, t, '#e0b0ff');
+  bubble('📰 Auto-generating news with AI!', mx, H-165, '#e0b0ff');
+
+  label('📰 DXC AI CoE · BBC ROBO JOURNALISM', W/2, 50, 15, '#e0b0ff');
+  label('2021 · Virtual Newsroom · Outlier Detection', W/2, 72, 11, '#f7c948');
+}
+
+// 9. American Airlines — airport
+function drawAirlinesScene(mx, t) {
+  const g = ctx.createLinearGradient(0,0,0,H-80);
+  g.addColorStop(0,'#000820'); g.addColorStop(1,'#001030');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H-80);
+  drawGround('#001020');
+
+  // stars / sky
+  for(let i=0;i<50;i++) star(i*22+5, 5+Math.sin(i*37)*55, 1.3, '#88aaff', t, 0.015+i*0.001);
+
+  // airport building
+  ctx.fillStyle='#001525';
+  ctx.strokeStyle='#0078d7'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.rect(500,H-290,370,210); ctx.fill(); ctx.stroke();
+
+  // windows
+  for(let r=0;r<4;r++) for(let c=0;c<7;c++) {
+    ctx.fillStyle=`rgba(0,120,215,${0.2+0.5*Math.random()>0.6?0.6:0.2})`;
+    ctx.strokeStyle='#0078d7'; ctx.lineWidth=0.5;
+    ctx.beginPath(); roundRect(515+c*48, H-275+r*48, 36,34,2); ctx.fill(); ctx.stroke();
+  }
+
+  // AA logo
+  ctx.fillStyle='#0078d7';
+  ctx.beginPath(); roundRect(510,H-295,120,22,4); ctx.fill();
+  label('American Airlines', 570, H-279, 10, '#fff');
+
+  // runway
+  ctx.fillStyle='#111';
+  ctx.beginPath(); ctx.rect(0,H-120,W,45); ctx.fill();
+  ctx.setLineDash([30,15]);
+  ctx.strokeStyle='#f7c948'; ctx.lineWidth=2;
+  ctx.beginPath(); ctx.moveTo(0,H-97); ctx.lineTo(W,H-97); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // plane taxiing on runway
+  const taxiX = (t * 2) % (W + 300) - 150;
+  ctx.save();
+  ctx.translate(taxiX, H-118);
+  ctx.scale(0.55,0.55);
+  // fuselage
+  ctx.fillStyle='#ccccdd';
+  ctx.beginPath();
+  ctx.moveTo(-100,0); ctx.lineTo(70,-14); ctx.lineTo(100,0); ctx.lineTo(70,14); ctx.closePath();
+  ctx.fill();
+  // wing
+  ctx.fillStyle='#aabbd0';
+  ctx.beginPath(); ctx.moveTo(-10,-14); ctx.lineTo(25,-14); ctx.lineTo(15,-60); ctx.lineTo(-25,-55); ctx.closePath(); ctx.fill();
+  // AA colors
+  ctx.fillStyle='#0078d7'; ctx.fillRect(30,-14,50,7);
+  ctx.fillStyle='#cc0000'; ctx.fillRect(30,-7,50,7);
+  // wheels
+  [-40,40].forEach(wx2 => {
+    ctx.beginPath(); ctx.arc(wx2,16,9,0,Math.PI*2);
+    ctx.fillStyle='#333'; ctx.fill();
+  });
+  ctx.restore();
+
+  // Azure pipeline visual
+  ctx.fillStyle='rgba(0,10,30,0.8)';
+  ctx.beginPath(); roundRect(mx+60, H-240, 210, 90, 8); ctx.fill();
+  ctx.strokeStyle='#0078d7'; ctx.lineWidth=1.5; ctx.stroke();
+  label('Azure Data Factory Pipeline', mx+165, H-220, 9, '#6ec6ff');
+  // data flow
+  for(let i=0;i<4;i++) {
+    const fx = mx+75+i*48;
+    const col = ['#0078d7','#00c6ff','#a855f7','#2adf8a'][i];
+    ctx.fillStyle=col+'44';
+    ctx.beginPath(); roundRect(fx, H-210, 38,30,4); ctx.fill();
+    ctx.strokeStyle=col; ctx.lineWidth=1; ctx.stroke();
+    label(['ADL','ADF','AML','FAA'][i], fx+19, H-190, 8, col);
+    if(i<3){
+      const arX = ((t*2+i*20) % 46);
+      ctx.fillStyle=col;
+      ctx.beginPath(); ctx.arc(fx+40+arX/3, H-194, 2.5, 0, Math.PI*2); ctx.fill();
+    }
+  }
+  label('✈ Arrival Time Prediction LIVE', mx+165, H-165, 9, '#f7c948');
+
+  drawManIdle(mx, H-80, t, '#6ec6ff');
+  bubble('🛫 Predicting flight arrivals!', mx, H-165, '#6ec6ff');
+
+  label('🛫 DXC TECHNOLOGY · AMERICAN AIRLINES', W/2, 50, 15, '#6ec6ff');
+  label('2021 – 2022 · World\'s Largest Airline · Azure ML', W/2, 72, 11, '#f7c948');
+}
+
+// 10. PepsiCo GenAI
+function drawGenAIScene(mx, t) {
+  const g = ctx.createLinearGradient(0,0,0,H);
+  g.addColorStop(0,'#0a001a'); g.addColorStop(1,'#15002e');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  drawGround('#1a0030');
+
+  // neural network background
+  const nodes = [];
+  for(let l=0;l<5;l++) for(let n=0;n<4;n++) {
+    nodes.push({x: 450+l*120, y: H/2-90+n*55, l, n});
+  }
+  nodes.forEach(nd => {
+    const active = Math.sin(t*0.06 + nd.l*0.8 + nd.n*1.2) > 0;
+    const r = active ? 8 : 5;
+    ctx.beginPath(); ctx.arc(nd.x,nd.y,r,0,Math.PI*2);
+    ctx.fillStyle = active ? '#a855f7' : '#3a1a5a';
+    ctx.shadowColor='#a855f7'; ctx.shadowBlur = active?12:0;
+    ctx.fill();
+    ctx.shadowBlur=0;
+    nodes.forEach(nd2 => {
+      if(nd2.l === nd.l+1) {
+        const sig = Math.sin(t*0.06 + nd.l*0.5 + nd.n)*0.5+0.5;
+        ctx.beginPath(); ctx.moveTo(nd.x,nd.y); ctx.lineTo(nd2.x,nd2.y);
+        ctx.strokeStyle=`rgba(168,85,247,${0.05+sig*0.25})`; ctx.lineWidth=1; ctx.stroke();
+      }
+    });
+  });
+
+  // floating LLM tokens
+  const tokens = ['LangChain','CrewAI','RAG','LLM','GPT','FastAPI','GraphQL','Vectors','Agents','PepsiCo'];
+  tokens.forEach((tok, i) => {
+    const fx = 80 + (mx + i*90 + t*0.5) % (W-100);
+    const fy = H-260 + Math.sin(t*0.04+i*0.8)*25;
+    ctx.fillStyle=`rgba(168,85,247,${0.12+0.08*Math.sin(t*0.05+i)})`;
+    ctx.beginPath(); roundRect(fx-tok.length*3, fy-10, tok.length*6+12, 22, 11); ctx.fill();
+    ctx.strokeStyle=`rgba(168,85,247,${0.4+0.3*Math.sin(t*0.05+i)})`; ctx.lineWidth=1; ctx.stroke();
+    label(tok, fx+3, fy+6, 9, '#d0a0ff');
+  });
+
+  // PepsiCo logo area
+  ctx.fillStyle='rgba(0,0,0,0.5)';
+  ctx.beginPath(); roundRect(W-240,H-300,200,120,12); ctx.fill();
+  ctx.strokeStyle='linear'; ctx.lineWidth=1.5;
+  // PepsiCo circle
+  ctx.beginPath(); ctx.arc(W-140, H-250, 35, 0, Math.PI*2);
+  ctx.fillStyle='#0066cc'; ctx.fill();
+  ctx.beginPath(); ctx.arc(W-140, H-250, 35, -Math.PI*0.3, Math.PI);
+  ctx.fillStyle='#e4002b'; ctx.fill();
+  ctx.beginPath(); ctx.arc(W-140, H-250, 35, Math.PI*0.7, Math.PI*1.3);
+  ctx.fillStyle='#fff'; ctx.fill();
+  label('PepsiCo', W-140, H-205, 12, '#e0eaff');
+  label('Fortune 50 · McKinney, TX', W-140, H-190, 9, '#a855f7');
+
+  // data pipeline
+  ctx.fillStyle='rgba(0,0,0,0.6)';
+  ctx.beginPath(); roundRect(mx+55, H-220, 230, 60, 8); ctx.fill();
+  ctx.strokeStyle='#a855f7'; ctx.lineWidth=1.5; ctx.stroke();
+  label('🤖 GenAI Production Pipeline', mx+170, H-200, 9, '#d0a0ff');
+
+  // pulsing pipeline
+  for(let i=0;i<5;i++) {
+    const px = mx+70+i*42;
+    const active = Math.floor(t/15)%5 === i;
+    ctx.beginPath(); ctx.arc(px, H-178, active?8:5, 0, Math.PI*2);
+    ctx.fillStyle = active ? '#a855f7' : '#3a1a5a';
+    ctx.shadowColor='#a855f7'; ctx.shadowBlur=active?14:0;
+    ctx.fill(); ctx.shadowBlur=0;
+    if(i<4){
+      const flow = (t/15)%1;
+      ctx.beginPath(); ctx.arc(px+22*flow, H-178, 2, 0, Math.PI*2);
+      ctx.fillStyle='#a855f7'; ctx.fill();
+    }
+    label(['Input','LLM','RAG','Agent','Output'][i], px, H-164, 8, active?'#d0a0ff':'#5a3a7a');
+  }
+
+  drawManIdle(mx, H-80, t, '#a855f7');
+
+  // speech bubble with typing effect
+  const msgs=['🤖 Building GenAI at PepsiCo!','⚡ LangChain + CrewAI + RAG','🌐 Fortune 50 AI Scale!'];
+  bubble(msgs[Math.floor(t/120)%msgs.length], mx, H-165, '#a855f7');
+
+  label('🚀 PEPSICO — GenAI · McKinney, Texas', W/2, 50, 15, '#a855f7');
+  label('2022 – Present · LLMs · Agents · RAG Pipelines', W/2, 72, 11, '#f7c948');
+}
+
+// ===================================================
+// WALKING TRANSITION
+// ===================================================
+let walkTarget = -1;
+let walkProgress = 0;
+const WALK_SPEED = 0.015;
+let fadeOut = false, fadeIn = false, fadeAlpha = 0;
+
+function goToScene(idx) {
+  if(idx < 0) idx = scenes.length - 1;
+  if(idx >= scenes.length) idx = 0;
+  if(idx === currentScene) return;
+  walkTarget = idx;
+  fadeOut = true;
+  fadeIn = false;
+  fadeAlpha = 0;
+  manWalking = true;
+  updateUI();
+}
+
+function updateUI() {
+  const s = scenes[currentScene];
+  document.getElementById('si-company').textContent = s.company;
+  document.getElementById('si-client').textContent = s.client;
+  document.getElementById('si-role').textContent = s.role;
+  document.getElementById('si-date').textContent = '📅 ' + s.date;
+
+  document.querySelectorAll('.dot-item').forEach((d,i) => {
+    d.classList.toggle('active', i===currentScene);
+  });
+  document.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+}
+
+// ===================================================
+// RENDER LOOP
+// ===================================================
+let raf;
+function render() {
+  ctx.clearRect(0,0,W,H);
+
+  t++;
+  sceneTimer++;
+
+  // draw current scene
+  const s = scenes[currentScene];
+  s.draw(manX, t);
+
+  // walking man on top
+  if(manWalking && walkTarget !== -1) {
+    drawMan(manX, H-80, t, '#00e5ff');
+  }
+
+  // fade transition
+  if(fadeOut) {
+    fadeAlpha += 0.04;
+    ctx.fillStyle = `rgba(10,10,26,${Math.min(fadeAlpha,1)})`;
+    ctx.fillRect(0,0,W,H);
+    if(fadeAlpha >= 1) {
+      currentScene = walkTarget;
+      walkTarget = -1;
+      fadeOut = false;
+      fadeIn = true;
+      fadeAlpha = 1;
+      manX = 120;
+      sceneTimer = 0;
+      updateUI();
+    }
+  }
+  if(fadeIn) {
+    fadeAlpha -= 0.04;
+    ctx.fillStyle = `rgba(10,10,26,${Math.max(fadeAlpha,0)})`;
+    ctx.fillRect(0,0,W,H);
+    if(fadeAlpha <= 0) { fadeIn = false; manWalking = false; }
+  }
+
+  // auto-advance
+  if(autoPlay && sceneTimer > SCENE_DURATION && !fadeOut && !fadeIn) {
+    const next = (currentScene + 1) % scenes.length;
+    goToScene(next);
+  }
+
+  raf = requestAnimationFrame(render);
+}
+
+// ===================================================
+// BUILD DOT NAV
+// ===================================================
+const track = document.getElementById('dot-track');
+scenes.forEach((s,i) => {
+  const item = document.createElement('div');
+  item.className = 'dot-item' + (i===0?' active':'');
+  item.innerHTML = `<div class="dot-circle"></div><div class="dot-label">${s.label}</div>`;
+  item.addEventListener('click', () => goToScene(i));
+  track.appendChild(item);
+});
+
+// ===================================================
+// BUTTON CONTROLS
+// ===================================================
+document.getElementById('btn-prev').addEventListener('click', () => {
+  goToScene((currentScene - 1 + scenes.length) % scenes.length);
+  autoPlay = false;
+  document.getElementById('btn-play').textContent = '▶ Play';
+  document.getElementById('btn-play').classList.remove('active');
+});
+document.getElementById('btn-next').addEventListener('click', () => {
+  goToScene((currentScene + 1) % scenes.length);
+});
+document.getElementById('btn-play').addEventListener('click', () => {
+  autoPlay = !autoPlay;
+  const btn = document.getElementById('btn-play');
+  btn.textContent = autoPlay ? '⏸ Pause' : '▶ Play';
+  btn.classList.toggle('active', autoPlay);
+});
+
+// ===================================================
+// INIT
+// ===================================================
+updateUI();
+render();
+</script>
+</body>
+</html>
